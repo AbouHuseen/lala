@@ -1,10 +1,12 @@
-// index.js
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const app = express();
 
-// Enable CORS so your API is remotely testable by FCC
+// Enable trust proxy to get correct IP if behind a proxy
+app.enable('trust proxy');
+
+// Enable CORS so your API is remotely testable by freeCodeCamp
 app.use(cors({ optionsSuccessStatus: 200 }));
 
 // Serve static files like HTML, CSS
@@ -17,8 +19,13 @@ app.get('/', (req, res) => {
 
 // API endpoint for /api/whoami
 app.get('/api/whoami', (req, res) => {
-  const ipaddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  // Get IP address from headers or connection
+  const ipaddress = req.headers['x-forwarded-for']?.split(',')[0] || req.connection.remoteAddress;
+
+  // Get preferred language
   const language = req.headers['accept-language'];
+
+  // Get software info (user-agent)
   const software = req.headers['user-agent'];
 
   res.json({
